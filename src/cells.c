@@ -28,6 +28,7 @@ local cell_t gridGetCell(int x, int y)
 	return cell_buffer[x][y];
 }
 
+
 void cellSandUpdate(int x, int y)
 {
 	/*
@@ -63,22 +64,22 @@ void cellSandUpdate(int x, int y)
 		*/
 		return;
 	}
-	else if(cellIsSolid(c00) && cellIsSolid(c01) && c02 == CELL_AIR && c10 == CELL_AIR && c12 == CELL_AIR)
+	else if(cellIsSolid(c00) && cellIsSolid(c01) && c02 == CELL_AIR && c12 == CELL_AIR)
 	{
 		/*
 		???    ???
-		.X. -> ...
+		?X. -> ?..
 		XX.    XXX
 		*/
 		cell_buffer[x][y] = CELL_AIR;
 		cell_buffer[x+1][y-1] = CELL_SAND;
 
 	}
-	else if(cellIsSolid(c01) && cellIsSolid(c02) && c00 == CELL_AIR && c10 == CELL_AIR && c12 == CELL_AIR)
+	else if(cellIsSolid(c01) && cellIsSolid(c02) && c00 == CELL_AIR && c10 == CELL_AIR)
 	{
 		/*
 		???    ???
-		.X. -> ...
+		.X? -> ..?
 		.XX    XXX
 		*/
 		cell_buffer[x][y] = CELL_AIR;
@@ -114,6 +115,17 @@ void cellSandUpdate(int x, int y)
 	}
 }
 
+void gridUpdate()
+{
+	for(int x=0; x < GRIDWIDTH; x++)
+	{
+		for(int y=0; y < GRIDHEIGHT; y++)
+		{
+			if(cell_buffer[x][y] == CELL_SAND)
+				cellSandUpdate(x,y);
+		}
+	}
+}
 
 void gridDraw(SDL_Renderer* r)
 {
@@ -148,7 +160,7 @@ void gridDraw(SDL_Renderer* r)
 				memcpy(&currentRenderColor, desiredRenderColor, sizeof(SDL_Color));
 				SDL_SetRenderDrawColor(r, currentRenderColor.r, currentRenderColor.g, currentRenderColor.b, currentRenderColor.a);
 			}
-			SDL_Rect rect = {x*CELLSIZE, y*CELLSIZE, CELLSIZE, CELLSIZE};
+			SDL_Rect rect = {x*CELLSIZE, SCREENHEIGHT - (y+1)*CELLSIZE, CELLSIZE, CELLSIZE};
 			SDL_RenderFillRect(r, &rect);
 		}
 	}

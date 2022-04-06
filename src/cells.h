@@ -13,5 +13,6 @@ extern cell_t cell_buffer[GRIDWIDTH][GRIDHEIGHT];
 
 void cellUpdateSand(int x, int y);
 void gridDraw(SDL_Renderer* r);
+void gridUpdate();
 
 #endif

@@ -1,14 +1,16 @@
 #include "sdl_util.h"
 #include "anna-layer.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 #include <stdlib.h>
 #include <time.h>
 #include "cells.h"
 #include "gfx.h"
 
-#define SCREENWIDTH 1600
-#define SCREENHEIGHT 900
 #define TITLETEXT "powdertoy but worse"
 
 #define TICK_INTERVAL 15
@@ -54,7 +56,11 @@ int main()
 		}
 	}
 
+	SDL_Point mousePos = {0};
+	SDL_Point gridPos = {-1};
+
 	char running = 1;
+	char placingBlock = 0;
 	while(running)
 	{
 		SDL_Event event;
@@ -74,15 +80,58 @@ int main()
 				default:
 					break;
 				}
-
+				break;
+			case SDL_MOUSEMOTION:
+				mousePos.x = event.motion.x;
+				mousePos.y = event.motion.y;
+				if(mousePos.x >= 0 && mousePos.x < GRIDWIDTH*CELLSIZE &&
+					mousePos.y >= 0 && mousePos.y < GRIDHEIGHT*CELLSIZE)
+				{
+					gridPos.x = mousePos.x / CELLSIZE;
+					gridPos.y = (SCREENHEIGHT - mousePos.y) / CELLSIZE;
+				}
+				else
+				{
+					gridPos.x = -1;
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if(event.button.button == SDL_BUTTON_LEFT)
+				{
+					placingBlock = 1;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(event.button.button == SDL_BUTTON_LEFT)
+				{
+					placingBlock = 0;
+				}
 			}
 		}
+
+		if(gridPos.x != -1 && placingBlock)
+		{
+			cell_buffer[gridPos.x][gridPos.y] = CELL_SAND;
+		}
+
+		gridUpdate();
 
 		// clear the back buffer
 		SDL_RenderClear(renderer); 
 
 		// copy texture to back buffer
 		gridDraw(renderer);
+
+		if(gridPos.x != -1)
+		{
+			SDL_Rect rect = {gridPos.x*CELLSIZE, SCREENHEIGHT - gridPos.y*CELLSIZE,
+				CELLSIZE, CELLSIZE};
+			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+			SDL_RenderFillRect(renderer, &rect);
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_RenderDrawPoint(renderer, mousePos.x, mousePos.y);
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		}
 
 		// swap front and back buffers
 		SDL_RenderPresent(renderer);
