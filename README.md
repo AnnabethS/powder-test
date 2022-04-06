@@ -1,12 +1,6 @@
-# Anna's SDL2 Template
+# Anna's Powdertoy Clone
 
-This is a quick repo i made to make making new SDL projects faster.
+This is intended to be a Data-Oriented rewrite of powdertoy, in order to learn
+how it works in order to apply it to a future game down the line
 
-## Instructions
-
-1. Clone repo
-2. Delete `.git` file
-3. Make into new repo
-4. Make your project
-   - Put `.c` and `.h` files in `/src`
-   - run `make` in the project root produces a `game` executable
+## Development Log

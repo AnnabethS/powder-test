@@ -2,16 +2,20 @@
 #include "anna-layer.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdlib.h>
+#include <time.h>
+#include "cells.h"
+#include "gfx.h"
 
 #define SCREENWIDTH 1600
 #define SCREENHEIGHT 900
-#define TITLETEXT "window title"
+#define TITLETEXT "powdertoy but worse"
 
 #define TICK_INTERVAL 15
 
-static u32 next_tick;
+local u32 next_tick;
 
-u32 timeLeft()
+local u32 timeLeft()
 {
 	u32 now = SDL_GetTicks();
 	if(next_tick <= now)
@@ -28,13 +32,27 @@ int main()
 			   (SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER),
 			   TITLETEXT, &window, &renderer);
 
-	SDL_Surface* s = IMG_Load("res/player.png");
-	SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
-	SDL_Rect testRect = {200,200,100,100};
-	SDL_FreeSurface(s);
+	/* SDL_Surface* s = IMG_Load("res/player.png"); */
+	/* SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s); */
+	/* SDL_Rect testRect = {200,200,100,100}; */
+	/* SDL_FreeSurface(s); */
+
+	srand(time(NULL));
+
+	GFXSetDefaults();
 	
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
+
+	/* memset(cell_buffer, CELL_AIR, sizeof(cell_t) * GRIDHEIGHT * GRIDWIDTH); */
+
+	for(int i=0; i < GRIDWIDTH; i++)
+	{
+		for(int j=0; j < GRIDHEIGHT; j++)
+		{
+			cell_buffer[i][j] = CELL_AIR;
+		}
+	}
 
 	char running = 1;
 	while(running)
@@ -64,7 +82,7 @@ int main()
 		SDL_RenderClear(renderer); 
 
 		// copy texture to back buffer
-		SDL_RenderCopy(renderer, t, NULL, &testRect); 
+		gridDraw(renderer);
 
 		// swap front and back buffers
 		SDL_RenderPresent(renderer);
