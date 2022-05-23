@@ -8,31 +8,56 @@
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
-//#define DEBUG_DRAW_GRID
+#define DEBUG_DRAW_GRID
 
 // cell buffer that holds all of the cells, and is updated in place
-cell_t cell_buffer[GRIDWIDTH][GRIDHEIGHT];
+cell cell_buffer[GRIDWIDTH][GRIDHEIGHT];
+cell_materials cell_mats = {
+    .blocker.id = CELL_BLOCKER,
+    .blocker.solid = 1,
+    .blocker.liquid = 0,
+    .blocker.gas = 0,
+    .blocker.flammable = 0,
+    .blocker.finite_frames_to_live = 0,
 
-local char cellIsSolid(cell_t type)
-{
-	return type == CELL_BLOCKER || type == CELL_SAND;
-}
+    .nothing.id = CELL_NOTHING,
+    .nothing.solid = 0,
+    .nothing.liquid = 0,
+    .nothing.gas = 0,
+    .nothing.flammable = 0,
+    .nothing.finite_frames_to_live = 0,
 
-local cell_t gridGetCell(int x, int y)
+    .sand.id = CELL_SAND,
+    .sand.solid = 1,
+    .sand.liquid = 0,
+    .sand.gas = 0,
+    .sand.flammable = 0,
+    .sand.finite_frames_to_live = 0,
+
+    .water.id = CELL_WATER,
+    .water.solid = 0,
+    .water.liquid = 1,
+    .water.gas = 0,
+    .water.flammable = 0,
+    .water.finite_frames_to_live = 0,
+};
+
+
+local cell_material* gridGetCellMaterial(int x, int y)
 {
 	if (x < 0 || y < 0 || x >= GRIDWIDTH || y >= GRIDHEIGHT)
 	{
-		return CELL_BLOCKER;
+		return &cell_mats.nothing;
 	}
 
-	return cell_buffer[x][y];
+	return cell_buffer[x][y].material;
 }
 
 
-void cellSandUpdate(int x, int y)
+void gridSolidUpdate(int x, int y)
 {
 	/*
-	SAND CA update options 
+	solid CA update options 
 
 	Legend:
 	. = AIR
@@ -40,79 +65,35 @@ void cellSandUpdate(int x, int y)
 	? = DONT CARE
 	*/
 
-	cell_t c00, c01, c02, c10, c11, c12;
-	c11 = gridGetCell(x, y);
-	if (c11 != CELL_SAND)
-	{
-		printf("ERROR: sand updater passed a cell that is not sand\n");
-	}
-	
-	
-	//cXY relative to x and y params
-	c00 = gridGetCell(x-1, y-1);
-	c01 = gridGetCell(x, y-1);
-	c02 = gridGetCell(x+1, y-1);
-	c10 = gridGetCell(x-1, y);
-	c12 = gridGetCell(x+1, y);
-	
-	if (cellIsSolid(c00) && cellIsSolid(c01) && cellIsSolid(c02))
-	{
 		/*
 		???    ???
 		?X? -> ?X?
 		XXX    XXX
 		*/
-		return;
-	}
-	else if(cellIsSolid(c00) && cellIsSolid(c01) && c02 == CELL_AIR && c12 == CELL_AIR)
-	{
+
 		/*
 		???    ???
 		?X. -> ?..
 		XX.    XXX
 		*/
-		cell_buffer[x][y] = CELL_AIR;
-		cell_buffer[x+1][y-1] = CELL_SAND;
 
-	}
-	else if(cellIsSolid(c01) && cellIsSolid(c02) && c00 == CELL_AIR && c10 == CELL_AIR)
-	{
 		/*
 		???    ???
 		.X? -> ..?
 		.XX    XXX
 		*/
-		cell_buffer[x][y] = CELL_AIR;
-		cell_buffer[x-1][y-1] = CELL_SAND;
-	}
-	else if(cellIsSolid(c01) && c00 == CELL_AIR && c10 == CELL_AIR && c02 == CELL_AIR && c12 == CELL_AIR)
-	{
+
 		/*
 		???    ???    ???
 		.X. -> ... or ...
 		.X.    XX.    .XX
 		*/
-		if(rand() % 2 == 0)
-		{ // pick left
-			cell_buffer[x][y] = CELL_AIR;
-			cell_buffer[x-1][y-1] = CELL_SAND;
-		}
-		else
-		{ // pick right
-			cell_buffer[x][y] = CELL_AIR;
-			cell_buffer[x+1][y-1] = CELL_SAND;
-		}
-	}
-	else if(c01 == CELL_AIR)
-	{
+
 		/*
 		???    ???
 		?X? -> ?.?
 		?.?    ?X?
 		*/
-		cell_buffer[x][y] = CELL_AIR;
-		cell_buffer[x][y-1] = CELL_SAND;
-	}
 }
 
 void gridUpdate()
@@ -121,8 +102,8 @@ void gridUpdate()
 	{
 		for(int y=0; y < GRIDHEIGHT; y++)
 		{
-			if(cell_buffer[x][y] == CELL_SAND)
-				cellSandUpdate(x,y);
+			if(cell_buffer[x][y].material->solid && !(cell_buffer[x][y].material->id==CELL_BLOCKER))
+				gridSolidUpdate(x,y);
 		}
 	}
 }
@@ -137,12 +118,12 @@ void gridDraw(SDL_Renderer* r)
 	{
 		for(int x=0; x < GRIDWIDTH; x++)
 		{
-			switch(cell_buffer[x][y])
+			switch(cell_buffer[x][y].material->id)
 			{
 			case CELL_BLOCKER:
 				desiredRenderColor = &default_colors.blocker;
 				break;
-			case CELL_AIR:
+			case CELL_NOTHING:
 				desiredRenderColor = &default_colors.air;
 				break;
 			case CELL_SAND:

@@ -17,4 +17,5 @@ void GFXSetDefaults()
 	setDefaultColor(&default_colors.blocker, 0, 0, 0);
 	setDefaultColor(&default_colors.air, 128, 128, 128);
 	setDefaultColor(&default_colors.sand, 203, 207, 175);
+	setDefaultColor(&default_colors.water, 90, 90, 255);
 }

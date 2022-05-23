@@ -28,6 +28,7 @@ local u32 timeLeft()
 
 int main()
 {
+	printf("size of cell: %lu\n", sizeof(cell));
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	basicSetup(SCREENWIDTH, SCREENHEIGHT,
@@ -52,7 +53,7 @@ int main()
 	{
 		for(int j=0; j < GRIDHEIGHT; j++)
 		{
-			cell_buffer[i][j] = CELL_AIR;
+			cell_buffer[i][j].material = &cell_mats.nothing;
 		}
 	}
 
@@ -111,7 +112,7 @@ int main()
 
 		if(gridPos.x != -1 && placingBlock)
 		{
-			cell_buffer[gridPos.x][gridPos.y] = CELL_SAND;
+			cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
 		}
 
 		gridUpdate();
