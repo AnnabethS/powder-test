@@ -125,7 +125,7 @@ int main()
 				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
 				break;
 			case 2:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.red_sand;
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.water;
 				break;
 			}
 

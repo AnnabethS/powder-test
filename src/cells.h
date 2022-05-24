@@ -17,6 +17,7 @@ typedef enum {
     // gasses
 	CELL_NOTHING,
     // liquids
+	CELL_OIL,
 	CELL_WATER,
 	// solids
 	CELL_RED_SAND,
@@ -26,9 +27,10 @@ typedef enum {
 }cell_id;
 
 typedef struct cell_material_t{
-	cell_id id;
+	cell_id id; // higher number = higher density
 	char solid;
 	char liquid;
+	uint liquid_spread_factor; // only relevant for liquids
 	char gas;
 	char flammable;
 	char finite_frames_to_live;
@@ -38,6 +40,7 @@ typedef struct cell_material_t{
 typedef struct cell_t{
 	cell_material* material;
 	uint frames_to_live;
+	char moved_this_frame;
 }cell;
 
 typedef struct{
@@ -46,6 +49,7 @@ typedef struct{
 	cell_material red_sand;
 	cell_material sand;
 	cell_material water;
+	cell_material oil;
 }cell_materials;
 
 
