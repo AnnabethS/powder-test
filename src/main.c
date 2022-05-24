@@ -101,27 +101,41 @@ int main()
 				{
 					placingBlock = 1;
 				}
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+				{
+					placingBlock = 2;
+				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button == SDL_BUTTON_LEFT)
 				{
 					placingBlock = 0;
 				}
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+				{
+					placingBlock = 0;
+				}
+				break;
 			}
 		}
 
 		if(gridPos.x != -1 && placingBlock)
-		{
-			cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
-		}
+			switch (placingBlock) {
+			case 1:
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
+				break;
+			case 2:
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.red_sand;
+				break;
+			}
 
-		gridUpdate();
+		grid_update();
 
 		// clear the back buffer
 		SDL_RenderClear(renderer); 
 
 		// copy texture to back buffer
-		gridDraw(renderer);
+		grid_draw(renderer);
 
 		if(gridPos.x != -1)
 		{

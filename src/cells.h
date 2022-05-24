@@ -4,8 +4,8 @@
 #include "anna-layer.h"
 #include <SDL2/SDL_render.h>
 
-#define GRIDWIDTH 64
-#define GRIDHEIGHT 64
+#define GRIDWIDTH 256
+#define GRIDHEIGHT 256
 
 typedef enum {
   // order in this list is important, it implies the density.
@@ -19,6 +19,7 @@ typedef enum {
     // liquids
 	CELL_WATER,
 	// solids
+	CELL_RED_SAND,
 	CELL_SAND,
 	//blocker (leave at bottom or bad things will happen)
 	CELL_BLOCKER
@@ -31,6 +32,7 @@ typedef struct cell_material_t{
 	char gas;
 	char flammable;
 	char finite_frames_to_live;
+	SDL_Color color;
 }cell_material;    
 
 typedef struct cell_t{
@@ -41,6 +43,7 @@ typedef struct cell_t{
 typedef struct{
 	cell_material blocker;
 	cell_material nothing;
+	cell_material red_sand;
 	cell_material sand;
 	cell_material water;
 }cell_materials;
@@ -50,8 +53,7 @@ extern cell_materials cell_mats;
 extern cell cell_buffer[GRIDWIDTH][GRIDHEIGHT];
 
 
-void cellUpdateSand(int x, int y);
-void gridDraw(SDL_Renderer* r);
-void gridUpdate();
+void grid_draw(SDL_Renderer* r);
+void grid_update();
 
 #endif
