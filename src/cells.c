@@ -543,7 +543,7 @@ void grid_draw(SDL_Renderer* r)
 	SDL_Color currentRenderColor = {0};
 	SDL_GetRenderDrawColor(r, &currentRenderColor.r, &currentRenderColor.g,
 	                       &currentRenderColor.b, &currentRenderColor.a);
-	SDL_Color* desiredRenderColor = &default_colors.blocker;
+	SDL_Color* desiredRenderColor = {0};
 	for(int y=0; y < GRIDHEIGHT; y++)
 	{
 		for(int x=0; x < GRIDWIDTH; x++)

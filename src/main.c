@@ -1,3 +1,4 @@
+#include "log_utils.h"
 #include "sdl_util.h"
 #include "anna-layer.h"
 #include <SDL2/SDL.h>
@@ -28,7 +29,9 @@ local u32 timeLeft()
 
 int main()
 {
-	printf("size of cell: %lu\n", sizeof(cell));
+	printf("individual cell size: %luB\n"
+           "whole map size: ", sizeof(cell));
+    log_human_readable_size(sizeof(cell)*GRIDHEIGHT*GRIDWIDTH);
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	basicSetup(SCREENWIDTH, SCREENHEIGHT,
@@ -42,8 +45,6 @@ int main()
 
 	srand(time(NULL));
 
-	GFXSetDefaults();
-	
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
