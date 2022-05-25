@@ -11,6 +11,7 @@
 #include <time.h>
 #include "cells.h"
 #include "gfx.h"
+#include "ui.h"
 
 #define TITLETEXT "powdertoy but worse"
 
@@ -45,9 +46,51 @@ int main()
 
 	srand(time(NULL));
 
+	if(ui_init() != 0)
+	{
+		fprintf(stderr, "error initialising UI, exiting...\n");
+		return -1;
+	}
+
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
+	button_toggle_set button_set_material_select = {
+		.length = 5,
+		.selected = -1,
+		.buttons = calloc(5, sizeof(button_toggle))};
+
+	button_toggle_init_text(renderer, &button_set_material_select.buttons[0],
+							"AIR", 1050, 50, 100, 50,
+							button_color_palette.nothing_hovered,
+							button_color_palette.unselected,
+							button_color_palette.nothing_selected,
+							NULL, NULL);
+	button_toggle_init_text(renderer, &button_set_material_select.buttons[1],
+							"SAND", 1150, 50, 100, 50,
+							button_color_palette.sand_hovered,
+							button_color_palette.unselected,
+							button_color_palette.sand_selected,
+							NULL, NULL);
+	button_toggle_init_text(renderer, &button_set_material_select.buttons[2],
+							"RED SAND", 1050, 100, 100, 50,
+							button_color_palette.red_sand_hovered,
+							button_color_palette.unselected,
+							button_color_palette.red_sand_selected,
+							NULL, NULL);
+	button_toggle_init_text(renderer, &button_set_material_select.buttons[3],
+							"WATER", 1150, 100, 100, 50,
+							button_color_palette.water_hovered,
+							button_color_palette.unselected,
+							button_color_palette.water_selected,
+							NULL, NULL);
+	button_toggle_init_text(renderer, &button_set_material_select.buttons[4],
+							"OIL", 1050, 150, 100, 50,
+							button_color_palette.oil_hovered,
+							button_color_palette.unselected,
+							button_color_palette.oil_selected,
+							NULL, NULL);
+	
 	/* memset(cell_buffer, CELL_AIR, sizeof(cell_t) * GRIDHEIGHT * GRIDWIDTH); */
 
 	for(int i=0; i < GRIDWIDTH; i++)
@@ -98,21 +141,20 @@ int main()
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				if(event.button.button == SDL_BUTTON_LEFT)
+				if(mousePos.x < GRIDWIDTH*CELLSIZE)
 				{
-					placingBlock = 1;
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						placingBlock = 1;
+					}
 				}
-				else if (event.button.button == SDL_BUTTON_RIGHT)
+				else
 				{
-					placingBlock = 2;
+					button_toggle_set_click(&button_set_material_select);
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button == SDL_BUTTON_LEFT)
-				{
-					placingBlock = 0;
-				}
-				else if (event.button.button == SDL_BUTTON_RIGHT)
 				{
 					placingBlock = 0;
 				}
@@ -121,22 +163,35 @@ int main()
 		}
 
 		if(gridPos.x != -1 && placingBlock)
-			switch (placingBlock) {
+			switch (button_set_material_select.selected) {
+			case -1:
+				break;
+			case 0:
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.nothing;
+				break;
 			case 1:
 				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
 				break;
 			case 2:
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.red_sand;
+				break;
+			case 3:
 				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.water;
+				break;
+			case 4:
+				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.oil;
 				break;
 			}
 
 		grid_update();
+		button_toggle_set_update(&button_set_material_select, mousePos.x, mousePos.y);
 
 		// clear the back buffer
 		SDL_RenderClear(renderer); 
 
 		// copy texture to back buffer
 		grid_draw(renderer);
+		button_toggle_set_draw(renderer, &button_set_material_select);
 
 		if(gridPos.x != -1)
 		{

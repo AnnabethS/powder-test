@@ -50,7 +50,7 @@ cell_materials cell_mats = {
     .water.id = CELL_WATER,
     .water.solid = 0,
     .water.liquid = 1,
-    .water.liquid_spread_factor = 3,
+    .water.liquid_spread_factor = 2,
     .water.gas = 0,
     .water.flammable = 0,
     .water.finite_frames_to_live = 0,
@@ -470,39 +470,39 @@ local void grid_liquid_update(int x, int y)
       .X. -> ..X or X..
       SSS    SSS    SSS
      */
-    if(!(c4->solid || c4->liquid || c4->gas || c6->solid || c6->liquid || c6->gas))
-    {
-        if(choose_side == -1)
-        {
-            for(int i=2; i <= c5->liquid_spread_factor; i++)
-            {
-                cell_material* check = grid_get_cell_material(x-i, y);
-                if(check->solid || check->liquid || check->gas)
-                {
-                    grid_move_cell(x, y, (x-i)+1, y);
-                    choose_side *= -1;
-                    return;
-                }
-            }
-            grid_move_cell(x, y, x - c5->liquid_spread_factor, y);
-        }
-        else
-        {
-            for(int i=2; i <= c5->liquid_spread_factor; i++)
-            {
-                cell_material* check = grid_get_cell_material(x+i, y);
-                if(check->solid || check->liquid || check->gas)
-                {
-                    grid_move_cell(x, y, (x+i)-1, y);
-                    choose_side *= -1;
-                    return;
-                }
-            }
-            grid_move_cell(x, y, x + c5->liquid_spread_factor, y);
-        }
-        choose_side *= -1;
-        return;
-    }
+    /* if(!(c4->solid || c4->liquid || c4->gas || c6->solid || c6->liquid || c6->gas)) */
+    /* { */
+    /*     if(choose_side == -1) */
+    /*     { */
+    /*         for(int i=2; i <= c5->liquid_spread_factor; i++) */
+    /*         { */
+    /*             cell_material* check = grid_get_cell_material(x-i, y); */
+    /*             if(check->solid || check->liquid || check->gas) */
+    /*             { */
+    /*                 grid_move_cell(x, y, (x-i)+1, y); */
+    /*                 choose_side *= -1; */
+    /*                 return; */
+    /*             } */
+    /*         } */
+    /*         grid_move_cell(x, y, x - c5->liquid_spread_factor, y); */
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         for(int i=2; i <= c5->liquid_spread_factor; i++) */
+    /*         { */
+    /*             cell_material* check = grid_get_cell_material(x+i, y); */
+    /*             if(check->solid || check->liquid || check->gas) */
+    /*             { */
+    /*                 grid_move_cell(x, y, (x+i)-1, y); */
+    /*                 choose_side *= -1; */
+    /*                 return; */
+    /*             } */
+    /*         } */
+    /*         grid_move_cell(x, y, x + c5->liquid_spread_factor, y); */
+    /*     } */
+    /*     choose_side *= -1; */
+    /*     return; */
+    /* } */
 }
 
 local void grid_gas_update(int x, int y)
