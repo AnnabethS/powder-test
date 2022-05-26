@@ -5,7 +5,7 @@
 #include "ui.h"
 
 //size to draw each cell in pixels
-#define CELLSIZE 4
+#define CELLSIZE 2
 
 #define SCREENWIDTH 1600
 #define SCREENHEIGHT 900

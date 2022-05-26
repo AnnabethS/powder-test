@@ -44,6 +44,8 @@ int main()
 	/* SDL_Rect testRect = {200,200,100,100}; */
 	/* SDL_FreeSurface(s); */
 
+    int circle_rad = 3;
+
 	srand(time(NULL));
 
 	if(ui_init() != 0)
@@ -65,30 +67,35 @@ int main()
 							button_color_palette.nothing_hovered,
 							button_color_palette.unselected,
 							button_color_palette.nothing_selected,
+							&material_selected_set, &cell_mats.nothing,
 							NULL, NULL);
 	button_toggle_init_text(renderer, &button_set_material_select.buttons[1],
 							"SAND", 1150, 50, 100, 50,
 							button_color_palette.sand_hovered,
 							button_color_palette.unselected,
 							button_color_palette.sand_selected,
+							&material_selected_set, &cell_mats.sand,
 							NULL, NULL);
 	button_toggle_init_text(renderer, &button_set_material_select.buttons[2],
 							"RED SAND", 1050, 100, 100, 50,
 							button_color_palette.red_sand_hovered,
 							button_color_palette.unselected,
 							button_color_palette.red_sand_selected,
+							&material_selected_set, &cell_mats.red_sand,
 							NULL, NULL);
 	button_toggle_init_text(renderer, &button_set_material_select.buttons[3],
 							"WATER", 1150, 100, 100, 50,
 							button_color_palette.water_hovered,
 							button_color_palette.unselected,
 							button_color_palette.water_selected,
+							&material_selected_set, &cell_mats.water,
 							NULL, NULL);
 	button_toggle_init_text(renderer, &button_set_material_select.buttons[4],
 							"OIL", 1050, 150, 100, 50,
 							button_color_palette.oil_hovered,
 							button_color_palette.unselected,
 							button_color_palette.oil_selected,
+							&material_selected_set, &cell_mats.oil,
 							NULL, NULL);
 	
 	/* memset(cell_buffer, CELL_AIR, sizeof(cell_t) * GRIDHEIGHT * GRIDWIDTH); */
@@ -163,25 +170,39 @@ int main()
 		}
 
 		if(gridPos.x != -1 && placingBlock)
-			switch (button_set_material_select.selected) {
-			case -1:
-				break;
-			case 0:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.nothing;
-				break;
-			case 1:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.sand;
-				break;
-			case 2:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.red_sand;
-				break;
-			case 3:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.water;
-				break;
-			case 4:
-				cell_buffer[gridPos.x][gridPos.y].material = &cell_mats.oil;
-				break;
-			}
+        {
+            if (cell_material_selected != NULL)
+            {
+                int top = floor((double)gridPos.y - ((double)circle_rad + 0.5));
+                int bot = ceil((double)gridPos.y + ((double)circle_rad + 0.5));
+                int left = floor((double)gridPos.x - ((double)circle_rad + 0.5));
+                int right = ceil((double)gridPos.x + ((double)circle_rad + 0.5));
+
+                if (top < 0)
+                    top = 0;
+
+                if (left < 0)
+                    left = 0;
+                
+                if (bot >= GRIDHEIGHT)
+                    bot = GRIDHEIGHT;
+
+                if (right >= GRIDWIDTH)
+                    right = GRIDWIDTH;
+
+                for (int y = top; y <= bot; y++)
+                {
+                    for (int x = left; x <= right; x++)
+                    {
+                        if ((pow(x - gridPos.x, 2) + pow(y - gridPos.y, 2) <=
+                           pow((double)circle_rad + 0.5, 2)))
+                        {
+                            cell_buffer[x][y].material = cell_material_selected;
+                        }                        
+                    }                    
+                }                  
+            }
+        }
 
 		grid_update();
 		button_toggle_set_update(&button_set_material_select, mousePos.x, mousePos.y);

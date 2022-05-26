@@ -10,7 +10,7 @@
 
 //#define DEBUG_DRAW_GRID
 
-#define GRAVITY 2
+#define GRAVITY 4
 
 // cell buffer that holds all of the cells, and is updated in place
 cell cell_buffer[GRIDWIDTH][GRIDHEIGHT];
@@ -50,7 +50,7 @@ cell_materials cell_mats = {
     .water.id = CELL_WATER,
     .water.solid = 0,
     .water.liquid = 1,
-    .water.liquid_spread_factor = 2,
+    .water.liquid_spread_factor = 3,
     .water.gas = 0,
     .water.flammable = 0,
     .water.finite_frames_to_live = 0,
@@ -59,7 +59,7 @@ cell_materials cell_mats = {
     .oil.id = CELL_OIL,
     .oil.solid = 0,
     .oil.liquid = 1,
-    .oil.liquid_spread_factor = 1,
+    .oil.liquid_spread_factor = 2,
     .oil.gas = 0,
     .oil.flammable = 1,
     .oil.finite_frames_to_live = 0,
@@ -286,8 +286,8 @@ local void grid_liquid_update(int x, int y)
     //if(c7->solid && c8->solid && !c9->solid && !c6->solid)
     if(is_liquid_blocking(c5, c7) &&
         is_liquid_blocking(c5, c8) &&
-       (!is_liquid_blocking(c5, c9)) &&
-       (!is_liquid_blocking(c5, c6)))
+       (!is_liquid_blocking(c5, c9)))
+       //(!is_liquid_blocking(c5, c6)))
     { // we can move there
         if (!(c9->liquid || c9->gas)) // its nothing, just move
         {
@@ -295,8 +295,8 @@ local void grid_liquid_update(int x, int y)
         }
         else
         { 
-            grid_move_cell(x+1, y-1, x+1, y);
-            grid_move_cell(x, y, x+1, y-1);
+            //grid_move_cell(x+1, y-1, x+1, y);
+            grid_swap_cell(x, y, x+1, y-1);
         }
         return;
     }
@@ -309,27 +309,17 @@ local void grid_liquid_update(int x, int y)
     //if(c9->solid && c8->solid && !c7->solid && !c4->solid)
     if(is_liquid_blocking(c5, c9) &&
         is_liquid_blocking(c5, c8) &&
-       (!is_liquid_blocking(c5, c7)) &&
-       (!is_liquid_blocking(c5, c4)))
+       (!is_liquid_blocking(c5, c7)))
+       //(!is_liquid_blocking(c5, c4)))
     { // we can move there
-
-        /* if(c7->liquid || c7->gas) */
-        /* { // swap */
-        /*     grid_swap_cell(x, y, x-1, y-1); */
-        /* } */
-        /* else */
-        /* { // just move */
-        /*     grid_move_cell(x, y, x-1, y-1); */
-        /* } */
-
         if (!(c7->liquid || c7->gas)) // its nothing, just move
         {
             grid_move_cell(x, y, x-1, y-1);
         }
         else
         { 
-            grid_move_cell(x-1, y-1, x-1, y);
-            grid_move_cell(x, y, x-1, y-1);
+            //grid_move_cell(x-1, y-1, x-1, y);
+            grid_swap_cell(x, y, x-1, y-1);
         }
         return;
     }
@@ -363,8 +353,8 @@ local void grid_liquid_update(int x, int y)
         }
         else 
         { 
-            grid_move_cell(x+choose_side, y-1, x+choose_side, y);
-            grid_move_cell(x, y, x+choose_side, y-1);
+            //grid_move_cell(x+choose_side, y-1, x+choose_side, y);
+            grid_swap_cell(x, y, x+choose_side, y-1);
         }
         
         choose_side *= -1;
@@ -407,8 +397,8 @@ local void grid_liquid_update(int x, int y)
             {
                 if(check->id < c5->id)
                 {
-                    grid_move_cell(x, y-i, x, (y-i)+1);
-                    grid_move_cell(x, y, x, y-i);
+                    //grid_move_cell(x, y-i, x, (y-i)+1);
+                    grid_swap_cell(x, y, x, y-i);
                 }
                 else
                 {
@@ -430,7 +420,7 @@ local void grid_liquid_update(int x, int y)
     if((!(c4->solid || c4->liquid || c4->gas)) && (c6->liquid || c6->solid || c6->gas))
     {
         // spread factor
-        for(int i=2; i <= c5->liquid_spread_factor; i++)
+        for(int i=1; i <= c5->liquid_spread_factor; i++)
         {
             cell_material* check = grid_get_cell_material(x-i, y);
             if(check->solid || check->liquid || check->gas)
@@ -452,7 +442,7 @@ local void grid_liquid_update(int x, int y)
     if(((c4->solid || c4->liquid || c4->gas)) && (!(c6->liquid || c6->solid || c6->gas)))
     {
         // spread factor
-        for(int i=2; i <= c5->liquid_spread_factor; i++)
+        for(int i=1; i <= c5->liquid_spread_factor; i++)
         {
             cell_material* check = grid_get_cell_material(x+i, y);
             if(check->solid || check->liquid || check->gas)

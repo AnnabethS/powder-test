@@ -1,6 +1,7 @@
 #ifndef ANNA_UI_H
 #define ANNA_UI_H
 
+#include "cells.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -29,8 +30,14 @@ typedef struct{
 	button_color color_unhovered;
 	button_color color_selected;
 	enum button_toggle_state state;
-	void (*func_selected)(); // points to a func that returns void and takes no args
-	void (*func_deselected)(); // points to a func that returns void and takes no args
+	// points to a func that returns void and takes an int
+	void (*func_selected)(void*); 
+	void* func_selected_param;
+	char func_selected_enabled;
+	// points to a func that returns void and takes no args
+	void (*func_deselected)(void*); 
+	char func_deselected_enabled;
+	void* func_deselected_param;
 }button_toggle;
 
 typedef struct{
@@ -40,6 +47,7 @@ typedef struct{
 }button_toggle_set;
 
 extern TTF_Font* button_font;
+extern cell_material* cell_material_selected;
 
 char button_toggle_init_text(
 	SDL_Renderer* r,
@@ -52,8 +60,8 @@ char button_toggle_init_text(
 	button_color hovered,
 	button_color unhovered,
 	button_color selected,
-	void (*on_select_func)(),
-	void (*on_deselect_func)());
+	void (*on_select_func)(void*), void* on_selected_param,
+	void (*on_deselect_func)(void*), void* on_deselected_param);
 
 char ui_init();
 
@@ -66,5 +74,7 @@ void button_toggle_set_update(button_toggle_set* bs, int mouse_x, int mouse_y);
 void button_toggle_set_draw(SDL_Renderer* r, button_toggle_set* bs);
 
 void button_toggle_set_click(button_toggle_set* bs);
+
+void material_selected_set(void* new_material);
 
 #endif

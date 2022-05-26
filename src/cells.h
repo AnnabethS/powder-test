@@ -4,8 +4,8 @@
 #include "anna-layer.h"
 #include <SDL2/SDL_render.h>
 
-#define GRIDWIDTH 256
-#define GRIDHEIGHT 256
+#define GRIDWIDTH 512
+#define GRIDHEIGHT 512
 
 typedef enum {
   // order in this list is important, it implies the density.

@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "cells.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
@@ -6,6 +7,7 @@
 #include <stdio.h>
 
 TTF_Font* button_font;
+cell_material* cell_material_selected = NULL;
 
 char ui_init()
 {
@@ -31,8 +33,8 @@ char button_toggle_init_text(
 	button_color hovered,
 	button_color unhovered,
 	button_color selected,
-	void (*on_select_func)(),
-	void (*on_deselect_func)())
+	void (*on_select_func)(void*), void* on_selected_param,
+	void (*on_deselect_func)(void*), void* on_deselected_param)
 {
 	dest->rect_box.x = x;
 	dest->rect_box.y = y;
@@ -44,11 +46,11 @@ char button_toggle_init_text(
 	dest->color_selected = selected;
 
 	dest->func_selected = on_select_func;
-	if(on_deselect_func != NULL)
-	{
-		printf("[WARN] deselection functions are not yet implemented!\n");
-	}
+    dest->func_selected_enabled = (on_select_func != NULL);
+    dest->func_selected_param = on_selected_param;
 	dest->func_deselected = on_deselect_func;
+    dest->func_deselected_enabled = (on_deselect_func != NULL);
+    dest->func_deselected_param = on_deselected_param;
 
 	SDL_Surface* s = TTF_RenderText_Solid(button_font, text, *hovered.text);
 	if(s == NULL)
@@ -172,16 +174,24 @@ void button_toggle_set_click(button_toggle_set* bs)
 		{
 			bs->buttons[i].state = BUTTON_TOGGLE_SELECTED;
 
-			if(bs->buttons[i].func_selected != NULL)
-				bs->buttons[i].func_selected();
+			if(bs->buttons[i].func_selected_enabled)
+            {
+				bs->buttons[i].func_selected(bs->buttons[i].func_selected_param);
+            }
 
 			bs->buttons[bs->selected].state = BUTTON_TOGGLE_UNHOVERED;
 
-			/* if(bs->buttons[bs->selected].func_deselected != NULL) */
-			/* 	bs->buttons[bs->selected].func_deselected(); */
+            if(bs->selected != -1)
+                if(bs->buttons[bs->selected].func_deselected_enabled)
+                    bs->buttons[bs->selected].func_deselected(bs->buttons[bs->selected].func_deselected_param);
 
 			bs->selected = i;
 			break;
 		}
 	}
+}
+
+void material_selected_set(void* new_material)
+{
+    cell_material_selected = (cell_material*) new_material;
 }
