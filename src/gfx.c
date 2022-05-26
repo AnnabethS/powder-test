@@ -93,4 +93,20 @@ struct button_color_defaults button_color_palette = {
 	.oil_selected.bg = &cell_mats.oil.color,
 	.oil_selected.border = &cell_mats.oil.color,
 	.oil_selected.text = &color_palette.black,
+
+	.grid_clear_hovered.bg = &color_palette.black,
+	.grid_clear_hovered.border = &color_palette.green,
+	.grid_clear_hovered.text = &color_palette.green,
+
+	.grid_clear_pushed.bg = &color_palette.green,
+	.grid_clear_pushed.border = &color_palette.green,
+	.grid_clear_pushed.text = &color_palette.black,
+
+	.game_quit_hovered.bg = &color_palette.black,
+	.game_quit_hovered.border = &color_palette.red,
+	.game_quit_hovered.text = &color_palette.red,
+
+	.game_quit_pushed.bg = &color_palette.red,
+	.game_quit_pushed.border = &color_palette.red,
+	.game_quit_pushed.text = &color_palette.black
 };

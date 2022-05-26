@@ -34,6 +34,10 @@ struct button_color_defaults{
 	button_color water_hovered;
 	button_color oil_selected;
 	button_color oil_hovered;
+	button_color grid_clear_hovered;
+	button_color grid_clear_pushed;
+	button_color game_quit_hovered;
+	button_color game_quit_pushed;
 };
 
 extern struct colors color_palette;

@@ -60,4 +60,7 @@ extern cell cell_buffer[GRIDWIDTH][GRIDHEIGHT];
 void grid_draw(SDL_Renderer* r);
 void grid_update();
 
+// must have this signature to work with the function pointer.
+void grid_clear(void* x);
+
 #endif

@@ -564,3 +564,15 @@ void grid_draw(SDL_Renderer* r)
 	
 	#endif
 }
+
+// must have this signature to work with the function pointer.
+void grid_clear(void* x) 
+{
+	for(int i=0; i < GRIDWIDTH; i++)
+	{
+		for(int j=0; j < GRIDHEIGHT; j++)
+		{
+			cell_buffer[i][j].material = &cell_mats.nothing;
+		}
+	}
+}

@@ -28,6 +28,10 @@ local u32 timeLeft()
 		return next_tick - now;
 }
 
+void game_quit(void* nothing);
+
+char game_running = 1;
+
 int main()
 {
 	printf("individual cell size: %luB\n"
@@ -100,6 +104,25 @@ int main()
 	
 	/* memset(cell_buffer, CELL_AIR, sizeof(cell_t) * GRIDHEIGHT * GRIDWIDTH); */
 
+	button_push_set button_set_other = {
+		.length = 2,
+		.buttons = calloc(2, sizeof(button_push))};
+
+	button_push_init_text(renderer, &button_set_other.buttons[0],
+						  "clear grid", 1050, 800, 100, 50,
+						  button_color_palette.unselected,
+						  button_color_palette.grid_clear_hovered,
+						  button_color_palette.grid_clear_pushed,
+						  &grid_clear, NULL);
+
+
+	button_push_init_text(renderer, &button_set_other.buttons[1],
+						  "quit game", 1150, 800, 100, 50,
+						  button_color_palette.unselected,
+						  button_color_palette.game_quit_hovered,
+						  button_color_palette.game_quit_pushed,
+						  &game_quit, NULL);
+	
 	for(int i=0; i < GRIDWIDTH; i++)
 	{
 		for(int j=0; j < GRIDHEIGHT; j++)
@@ -111,9 +134,8 @@ int main()
 	SDL_Point mousePos = {0};
 	SDL_Point gridPos = {-1};
 
-	char running = 1;
 	char placingBlock = 0;
-	while(running)
+	while(game_running)
 	{
 		SDL_Event event;
 		while(SDL_PollEvent(&event))
@@ -121,13 +143,13 @@ int main()
 			switch(event.type)
 			{
 			case SDL_QUIT:
-				running = 0;
+				game_quit(NULL);
 				break;
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_ESCAPE:
-					running = 0;
+					game_quit(NULL);
 					break;
 				default:
 					break;
@@ -158,12 +180,17 @@ int main()
 				else
 				{
 					button_toggle_set_click(&button_set_material_select);
+					button_push_set_click(&button_set_other);
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button == SDL_BUTTON_LEFT)
 				{
 					placingBlock = 0;
+					if(mousePos.x > GRIDWIDTH*CELLSIZE)
+					{
+						button_push_set_unclick(&button_set_other);
+					}
 				}
 				break;
 			}
@@ -206,6 +233,7 @@ int main()
 
 		grid_update();
 		button_toggle_set_update(&button_set_material_select, mousePos.x, mousePos.y);
+		button_push_set_update(&button_set_other, mousePos.x, mousePos.y);
 
 		// clear the back buffer
 		SDL_RenderClear(renderer); 
@@ -213,6 +241,7 @@ int main()
 		// copy texture to back buffer
 		grid_draw(renderer);
 		button_toggle_set_draw(renderer, &button_set_material_select);
+		button_push_set_draw(renderer, &button_set_other);
 
 		if(gridPos.x != -1)
 		{
@@ -232,4 +261,10 @@ int main()
 		SDL_Delay(timeLeft());
 		next_tick += TICK_INTERVAL;
 	}
+}
+
+// must have this function signature to use the function pointer
+void game_quit(void* nothing)
+{
+	game_running = 0;
 }
