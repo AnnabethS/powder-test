@@ -37,7 +37,7 @@ cell_materials cell_mats = {
     .sand.gas = 0,
     .sand.flammable = 0,
     .sand.finite_frames_to_live = 0,
-    .sand.color = {255, 229, 187, 255},
+    .sand.color = {255, 239, 197, 255},
 
     .red_sand.id = CELL_RED_SAND,
     .red_sand.solid = 1,
@@ -45,7 +45,7 @@ cell_materials cell_mats = {
     .red_sand.gas = 0,
     .red_sand.flammable = 1,
     .red_sand.finite_frames_to_live = 0,
-    .red_sand.color = {255, 170, 109, 255},
+    .red_sand.color = {255, 150, 89, 255},
 
     .water.id = CELL_WATER,
     .water.solid = 0,
@@ -63,7 +63,7 @@ cell_materials cell_mats = {
     .oil.gas = 0,
     .oil.flammable = 1,
     .oil.finite_frames_to_live = 0,
-    .oil.color = {196, 180, 0, 255}
+    .oil.color = {77, 77, 77, 255}
 };
 
 
